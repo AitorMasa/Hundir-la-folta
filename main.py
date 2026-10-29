@@ -46,8 +46,8 @@ tablero_bot = f.crear_tablero()
 f.colocar_barcos(flota_jugador, tablero_jugador) # colocar los barcos en el tablero
 f.colocar_barcos(flota_bot, tablero_bot)
 
-print("Barcos del jugador:", flota_jugador) # mostrar coordenadas para probar el juego
-print("Barcos del bot:", flota_bot)
+#print("Barcos del jugador:", flota_jugador) # mostrar coordenadas para probar el juego
+#print("Barcos del bot:", flota_bot)
 
 f.inicio()
 f.jugar(tablero_jugador, matriz_disparos_player, tablero_bot, matriz_disparos_bot)
