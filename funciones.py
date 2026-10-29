@@ -2,14 +2,13 @@
 import numpy as np
 import variables as v
   
-
-def crear_tablero(): 
-        num=4
-        matrices = np.zeros((10,10))
-        num= num+1
+    
+def crear_tablero(): # crear tableros
+       
+        matrices = np.full((10,10),"¨")
         return matrices
         
-def crear_barcos(eslora): 
+def crear_barcos(eslora): #crear barcos
     barco = []
     direccion = np.random.choice(("v", "h"))
 
@@ -26,9 +25,7 @@ def crear_barcos(eslora):
 
     return barco
 
-
-
-def se_tocan(barco, flota):
+def se_tocan(barco, flota): # condicion que no se toquen
     for fila, columna in barco:
         for otro_barco in flota:
             for otra_fila, otra_columna in otro_barco:
@@ -37,7 +34,7 @@ def se_tocan(barco, flota):
     return False
 
 
-def crear_flota():
+def crear_flota(): # crear la flota
     flota = []
     for eslora in v.esloras:
         colocado = False
@@ -49,17 +46,16 @@ def crear_flota():
     return flota
 
 
-def colocar_barcos(flota,tablero):
+def colocar_barcos(flota,tablero): # colocar barcos en tablero
 
     for barco in flota:
-        print("Barco",barco)
         for fila,columna in barco:
-            tablero[fila,columna]= 1
+            tablero[fila,columna]= "1"
     
     return tablero       
 
-def comprobar_flota():
-    esloras=[4,3,3,2,2,2]
+def comprobar_flota(): # comprobar si la flota cumple condiciones, si fuera de rango
+    esloras=[4,3,3,2,2,2] # si fuera de rango, repetir
     flota=[]
     for eslora in v.crear_flota:
         flota.append(crear_barcos(eslora))
@@ -72,7 +68,7 @@ def comprobar_flota():
     
     return flota   
 
-def inicio ():    
+def inicio ():  # inicio de progama y sorteo de jugador que inicia la partida  
 
     var1=input("Elige cara o cruz para ver quien comienza el juego:      ").lower()
 
@@ -89,69 +85,90 @@ def inicio ():
     else:
         return inicio()  
     
-def jugar ():
-    coordenada_bot = []
-    coordenada_player  = []
-    restantes_bot = 16
+def jugar (matriz_barcos_player, matriz_disparos_player, matriz_barcos_bot,matriz_disparos_bot,): # funcion principal y logica del juego de juego 
+    coordenadas_bot = [] # lista coordenadas
+    coordenadas_player  = []
+    restantes_bot = 16 # aciertos restantes apra terminar el juego
     restantes_player = 16
-    disparos_bot=0
+    disparos_bot=0 # numero de disparos realizados
     disparos_player=0
-    turno_bot = 0
+    turno_bot = 0 # nuemro de turnos jugados 
     turno_player = 0
-    v.inicio_juego
+    v.inicio_juego # por defecto 0, cara o cruz para sortear el player que comienza a jugar
+   
+    
      
 
-    if restantes_bot !=0  or  restantes_player !=0:
+    while restantes_bot !=0  and  restantes_player !=0:
 
-        while (v.inicio_juego == 1) &  (restantes_bot !=0): # JUEGA EL BOT
+        while (v.inicio_juego == 1) &  (restantes_bot !=0): # JUEGA EL BOT 1
+                
+                coordenada_bot = tuple(np.random.randint(0,10,size=2))
+                if coordenada_bot in coordenadas_bot:# COMPROBACION DE REPETICION
+                    print("esa cooordenada ya al has dicho")
+                    print("dime otra coordenada")
+                    continue 
+                   
+                coordenadas_bot.append(coordenada_bot)
+                              
+                if  matriz_barcos_player[coordenada_bot] == "1": # COMPROBACION DISPARO                  
+                    matriz_barcos_player[coordenada_bot] = 4 # 4  cambio donde cae el disparo
+                    matriz_disparos_bot[coordenada_bot] = 4
+                    turno_bot = turno_bot+1 # Numero de turnos
+                    restantes_bot= restantes_bot -1 # posiciones restantes
+                    v.inicio_juego = 1
+                    print(matriz_disparos_bot)
+                    print("acierto en ", coordenada_bot)
+                    
+                else:                 
+                    matriz_barcos_player[coordenada_bot] =0
+                    matriz_disparos_bot[coordenada_bot] = 0
+                    turno_bot = turno_bot+1
+                    v.inicio_juego= 0
+                    print(matriz_disparos_bot)
+                    print("AGUA  en ",coordenada_bot ,  "es tu turno")
+                    print(coordenada_bot)
+                    continue
 
-            coordenada_bot = np.random.randint(0-10,size=(1,1))
-            coordenada_bot = list(coordenada_bot).append
-            if coordenada_bot  in  matriz_barcos_player == "1":
-                matriz_barcos_player[coordenada_bot] = 4# 4 donde cae el disparo
-                matriz_disparos_bot[coordenada_bot] = 4
-                turno_bot = turno_bot+1
-                restantes_bot= restantes_bot -1
-                v.inicio_juego = 1
-                print("acierto")
-                return jugar()
-            else:
-                disparos_bot = list(disparos_bot).append
-                matriz_barcos_player[coordenada_bot] =2
-                matriz_disparos_bot[coordenada_bot] = 2
-                turno_bot = turno_bot+1
-                v.inicio_juego= 0
-                print("AGUA  , es tu turno")
-                return jugar()
 
+        while (v.inicio_juego == 0 ) &  (restantes_player !=0): # JUEGO YO 0
+                    
+                    entrada = input("Dime dos números seguidos (fila y columna): ")
+                    coordenada_player = (int(entrada[0]), int(entrada[1]))
 
-        while (v.inicio_juego == 0 ) &  (restantes_player !=0): # JUEGO YO
-            coordenada_player = input("Dime coordenada")
-            coordenada_player  = list(coordenada_player ).append
-            if coordenada_player  in  matriz_barcos_bot == "1":
-                matriz_barcos_bot[coordenada_bot] = 4# 4 donde cae el disparo
-                matriz_disparos_bot[coordenada_bot] = 4
-                turno_bot = turno_bot+1
-                v.inicio_juego= 0
-                restantes_player= restantes_player-1
-                print("acierto")
-                return jugar()
-            else:
-                disparos_player = list(disparos_player).append
-                matriz_barcos_bot[coordenada_bot] = 2
-                matriz_disparos_bot[coordenada_bot] = 2
-                turno_player = turno_player+1
-                v.inicio_juego= 1
-                print("AGUA  , es tu turno")
+                    if coordenada_player in coordenadas_player:
+                     print("Ya has disparado ahí")
+                     continue
+                   
+                    coordenadas_player.append(coordenada_player)
+                
+                    if matriz_barcos_bot[coordenada_player] == "1":
+                        matriz_barcos_bot[coordenada_player]  = 4 # 4 donde cae el disparo acertando
+                        matriz_disparos_player[coordenada_player] = 4
+                        turno_player = turno_player+1
+                        v.inicio_juego= 0
+                        restantes_player= restantes_player-1
+                        print(matriz_disparos_player)
+                        print("acierto en ",coordenada_player)
+                        #if  coordenada_player in matriz_barcos_bot   no tiene otra al lado           #HUNDIDO
+                                    
+                    else:
+                        matriz_barcos_bot[coordenada_player] = 0
+                        matriz_disparos_player[coordenada_player] = 0
+                        turno_player = turno_player+1
+                        v.inicio_juego= 1
+                        print(matriz_disparos_player)
+                        print("AGUA  ",coordenada_player ,  "es tu turno")
+                        print(coordenada_player)
+                   
 
     if restantes_bot == 0:
         print("Ha ganado el bot")
-    else:
-        pass
+   
     if restantes_player== 0:
         print("Ha ganado el player")  
-    else:
-        pass
+
+print("~~~~~~~~~~ - HUNDIR LA FLOTA - ~~~~~~~~~~~~") 
 
 
 
